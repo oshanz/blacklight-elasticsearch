@@ -91,8 +91,7 @@ it:
         group:
           close: Nascondi sfaccettature
           open: Mostra sfaccettature
-        missing:
-          - Mancante
+        missing: "[Mancante]"
         more_html: altri <span class="visually-hidden">%{field_name}</span> »
         pivot:
           hide: Chiudi
@@ -199,6 +198,11 @@ it:
       success: SMS inviato
       text:
         url: "Link: %{url}"
+    theme:
+      auto: Automatico
+      dark: Scuro
+      light: Chiaro
+      toggle: Cambia tema
     tools:
       citation: Cita
       clear: Cancella

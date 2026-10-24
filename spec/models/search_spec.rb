@@ -2,7 +2,7 @@
 
 RSpec.describe Search do
   let(:search) { described_class.new(user: user) }
-  let(:user) { User.create! email: 'xyz@example.com', password: 'xyz12345' }
+  let(:user) { create_user email: 'xyz@example.com', password: 'xyz12345' }
   let(:hash_params) { { q: "query", f: { facet: "filter" } } }
   let(:query_params) { hash_params }
 
@@ -15,19 +15,19 @@ RSpec.describe Search do
       end
     end
 
-    context "are an indifferent hash" do
+    context "when they are an indifferent hash" do
       include_context "persisting query_params" do
         let(:query_params) { hash_params.with_indifferent_access }
       end
     end
 
-    context "are a string-keyed hash" do
+    context "when they are a string-keyed hash" do
       include_context "persisting query_params" do
         let(:query_params) { hash_params.with_indifferent_access.to_hash }
       end
     end
 
-    context "include symbol keys" do
+    context "when they include symbol keys" do
       include_context "persisting query_params" do
         let(:query_params) { hash_params }
       end

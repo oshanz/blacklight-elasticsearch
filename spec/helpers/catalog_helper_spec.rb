@@ -112,7 +112,7 @@ RSpec.describe CatalogHelper do
     context "with an ActiveRecord collection" do
       subject { helper.page_entries_info(Bookmark.page(1).per(25)) }
 
-      let(:user) { User.create! email: 'xyz@example.com', password: 'xyz12345' }
+      let(:user) { create_user email: 'xyz@example.com', password: 'xyz12345' }
 
       before { 50.times { Bookmark.create!(user: user) } }
 
@@ -124,7 +124,7 @@ RSpec.describe CatalogHelper do
     context "when an alternate scope is passed in" do
       subject(:tag) { helper.rss_feed_link_tag(route_set: my_engine) }
 
-      let(:my_engine) { double("Engine") }
+      let(:my_engine) { instance_double(ActionDispatch::Routing::RoutesProxy) }
       let(:query_params) { { controller: 'catalog', action: 'index' } }
       let(:config) { Blacklight::Configuration.new }
       let(:search_state) { Blacklight::SearchState.new(query_params, config, controller) }
@@ -135,9 +135,9 @@ RSpec.describe CatalogHelper do
 
       it "calls url_for on the engine scope" do
         expect(my_engine).to receive(:url_for).and_return('/rss-path')
-        expect(tag).to match(/title="RSS for results"/)
-        expect(tag).to match(/rel="alternate"/)
-        expect(tag).to match %r{type="application/rss\+xml"}
+        expect(tag).to include('title="RSS for results"')
+        expect(tag).to include('rel="alternate"')
+        expect(tag).to include('type="application/rss+xml"')
       end
     end
   end
@@ -146,7 +146,7 @@ RSpec.describe CatalogHelper do
     context "when an alternate scope is passed in" do
       subject(:tag) { helper.atom_feed_link_tag(route_set: my_engine) }
 
-      let(:my_engine) { double("Engine") }
+      let(:my_engine) { instance_double(ActionDispatch::Routing::RoutesProxy) }
       let(:query_params) { { controller: 'catalog', action: 'index' } }
       let(:config) { Blacklight::Configuration.new }
       let(:search_state) { Blacklight::SearchState.new(query_params, config, controller) }
@@ -157,9 +157,9 @@ RSpec.describe CatalogHelper do
 
       it "calls url_for on the engine scope" do
         expect(my_engine).to receive(:url_for).and_return('/atom-path')
-        expect(tag).to match(/title="Atom for results"/)
-        expect(tag).to match(/rel="alternate"/)
-        expect(tag).to match %r{type="application/atom\+xml"}
+        expect(tag).to include('title="Atom for results"')
+        expect(tag).to include('rel="alternate"')
+        expect(tag).to include('type="application/atom+xml"')
       end
     end
   end
@@ -325,7 +325,7 @@ RSpec.describe CatalogHelper do
         session[:preferred_view] = :b
       end
 
-      context "and no view is specified" do
+      context "when no view is specified" do
         it "uses the saved preference" do
           allow(helper).to receive(:document_index_views).and_return(a: 1, b: 2, c: 3)
           expect(helper.document_index_view_type).to eq :b
@@ -337,7 +337,7 @@ RSpec.describe CatalogHelper do
         end
       end
 
-      context "and a view is specified" do
+      context "when a view is specified" do
         it "uses the query parameter" do
           allow(helper).to receive(:document_index_views).and_return(a: 1, b: 2, c: 3)
           expect(helper.document_index_view_type(view: :c)).to eq :c

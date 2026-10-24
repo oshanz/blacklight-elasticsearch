@@ -3,6 +3,10 @@
 # SearchService returns search results from the repository
 module Blacklight
   class SearchService
+    # @params [Blacklight::Configuration] config
+    # @params [Blacklight::SearchState] search_state
+    # @params [Class] search_builder_class a class that inherits from Blacklight::SearchBuilder
+    # @params [Hash] context any data the search builder needs to access. For example, the current user.
     def initialize(config:, search_state:, search_builder_class: config.search_builder_class, **context)
       @blacklight_config = config
       @search_state = search_state
@@ -106,7 +110,7 @@ module Blacklight
       field ||= blacklight_config.view_config(:opensearch).title_field
 
       query = search_builder.with(search_state).merge(solr_opensearch_params(field)).merge(extra_controller_params)
-      response = repository.search(query)
+      response = repository.search(params: query)
 
       [search_state.query_param, response.documents.flat_map { |doc| doc[field] }.uniq]
     end
@@ -153,14 +157,22 @@ module Blacklight
       # default page size). Route it through the builder so each adapter translates
       # it appropriately (Solr `rows`, Elasticsearch `size`) instead of leaking raw
       # into the request body.
-      rows = extra_controller_params.delete(:rows) || extra_controller_params.delete('rows')
+      # rows = extra_controller_params.delete(:rows) || extra_controller_params.delete('rows')
+
+      requested_rows = extra_controller_params.delete(:rows)
+      if requested_rows
+        Blacklight.deprecation.warn("Passing :rows to fetch_many is deprecated. Create an issue in blacklight if you see this warning. " \
+                                    "Otherwise, :rows will be ignored in Blackight 10")
+      else
+        requested_rows = ids.count
+      end
 
       query = search_builder
               .with(search_state)
               .where(blacklight_config.document_model.unique_key => ids)
               .merge(blacklight_config.fetch_many_document_params)
               .merge(extra_controller_params)
-      query.rows(rows) if rows
+      query.rows(requested_rows)
 
       # find_many was introduced in Blacklight 8.4. Before that, we used the
       # regular search method (possibly with a find-many specific `qt` parameter).
@@ -170,7 +182,7 @@ module Blacklight
                         repository.find_many(query)
                       else
                         Blacklight.deprecation.warn("Repository#find_many is not implemented. Falling back to Repository#search.")
-                        repository.search(query)
+                        repository.search(params: query)
                       end
 
       solr_response.documents

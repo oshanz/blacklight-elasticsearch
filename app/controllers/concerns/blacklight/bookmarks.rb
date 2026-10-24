@@ -13,6 +13,8 @@ module Blacklight::Bookmarks
 
     copy_blacklight_config_from(CatalogController)
 
+    allow_unauthenticated_access raise: false if respond_to?(:allow_unauthenticated_access)
+
     before_action :verify_user
 
     blacklight_config.track_search_session.storage = false
@@ -27,7 +29,7 @@ module Blacklight::Bookmarks
   def action_documents
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
-    search_service.fetch(bookmark_ids, rows: bookmark_ids.count)
+    search_service.fetch(bookmark_ids)
   end
 
   def action_success_redirect_path
@@ -140,7 +142,7 @@ module Blacklight::Bookmarks
   private
 
   def verify_user
-    unless current_or_guest_user || (action == "index" && token_or_current_or_guest_user)
+    unless current_or_guest_user || (action_name == "index" && token_or_current_or_guest_user)
       flash[:notice] = I18n.t('blacklight.bookmarks.need_login')
       raise Blacklight::Exceptions::AccessDenied
     end

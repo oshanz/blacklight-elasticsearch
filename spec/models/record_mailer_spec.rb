@@ -41,7 +41,7 @@ RSpec.describe RecordMailer do
     end
 
     it "puts the title of the item in the subject" do
-      expect(email.subject).to match(/The horn/)
+      expect(email.subject).to include('The horn')
     end
 
     it "has the correct from address (w/o the port number)" do
@@ -49,8 +49,8 @@ RSpec.describe RecordMailer do
     end
 
     it "prints out the correct body" do
-      expect(email.body).to match(/Title: The horn/)
-      expect(email.body).to match(/Author: Janetzky, Kurt/)
+      expect(email.body).to include('Title: The horn')
+      expect(email.body).to include('Author: Janetzky, Kurt')
       expect(email.body).to match(/projectblacklight.org/)
     end
 
@@ -60,7 +60,7 @@ RSpec.describe RecordMailer do
       expect(@https_email.body).to match %r{https://projectblacklight.org/}
     end
 
-    context "email title_field is configured and multi valued" do
+    context "when email title_field is configured and multi valued" do
       let(:document) { SolrDocument.new(id: "123456", foo: ["Fizz Fizz", "Fuzz Fuzz"], format: ["book"], title_tsim: "The horn", language_ssim: "English", author_tsim: "Janetzky, Kurt") }
 
       before do
@@ -72,7 +72,7 @@ RSpec.describe RecordMailer do
       end
     end
 
-    context "email title_field is configured and single valued" do
+    context "when email title_field is configured and single valued" do
       let(:document) { SolrDocument.new(id: "123456", foo: "Fizz Fizz", format: ["book"], title_tsim: "The horn", language_ssim: "English", author_tsim: "Janetzky, Kurt") }
 
       before do
@@ -104,8 +104,8 @@ RSpec.describe RecordMailer do
     end
 
     it "prints out the correct body" do
-      expect(@sms.body).to match(/Title: The horn/)
-      expect(@sms.body).to match(/Author: Janetzky, Kurt/)
+      expect(@sms.body).to include('Title: The horn')
+      expect(@sms.body).to include('Author: Janetzky, Kurt')
       expect(@sms.body).to match(/projectblacklight.org:3000/)
     end
 

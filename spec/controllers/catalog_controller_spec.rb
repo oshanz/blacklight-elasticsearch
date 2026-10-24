@@ -248,7 +248,7 @@ RSpec.describe CatalogController, :api do
 
     it "redirects to show action for doc id" do
       put :track, params: { id: doc_id, counter: 3 }
-      assert_redirected_to(solr_document_path(doc_id))
+      expect(response).to redirect_to(solr_document_path(doc_id))
     end
 
     it "HTTP status code for redirect should be 303" do
@@ -258,17 +258,17 @@ RSpec.describe CatalogController, :api do
 
     it "redirects to the path given in the redirect param" do
       put :track, params: { id: doc_id, counter: 3, redirect: '/xyz' }
-      assert_redirected_to("/xyz")
+      expect(response).to redirect_to("/xyz")
     end
 
     it "redirects to the path of the uri given in the redirect param" do
       put :track, params: { id: doc_id, counter: 3, redirect: 'http://localhost:3000/xyz' }
-      assert_redirected_to("/xyz")
+      expect(response).to redirect_to("/xyz")
     end
 
     it "keeps querystring on redirect" do
       put :track, params: { id: doc_id, counter: 3, redirect: 'http://localhost:3000/xyz?locale=pt-BR' }
-      assert_redirected_to("/xyz?locale=pt-BR")
+      expect(response).to redirect_to("/xyz?locale=pt-BR")
     end
   end
 
@@ -342,15 +342,15 @@ RSpec.describe CatalogController, :api do
         allow(controller).to receive_messages(search_service: search_service, current_search_session: current_search)
       end
 
-      context 'if counter is present in session' do
+      context 'when counter is present in session' do
         before do
           session[:search] = search_session.merge('counter' => 2)
         end
 
-        context 'and no exception is raised' do
+        context 'when no exception is raised' do
           before do
             expect(search_service).to receive(:previous_and_next_documents_for_search)
-              .and_return([double(total: 5), [double("a"), mock_document, double("b")]])
+              .and_return([double(total: 5), [SolrDocument.new(id: "a"), mock_document, SolrDocument.new(id: "b")]])
           end
 
           it "sets previous document" do
@@ -364,7 +364,7 @@ RSpec.describe CatalogController, :api do
           end
         end
 
-        context 'and an exception is raised' do
+        context 'when an exception is raised' do
           before do
             expect(search_service).to receive(:previous_and_next_documents_for_search) {
               raise Blacklight::Exceptions::InvalidRequest, "Error"
@@ -443,7 +443,7 @@ RSpec.describe CatalogController, :api do
       it "responds to an extension-registered format properly" do
         get :show, params: { id: doc_id, format: 'mock' }
         expect(response).to be_successful
-        expect(response.body).to match(/mock_export/)
+        expect(response.body).to include('mock_export')
       end
     end # dynamic export formats
   end # describe show action
@@ -599,7 +599,7 @@ RSpec.describe CatalogController, :api do
 
     it "does not show user util links" do
       get :index
-      expect(response.body).not_to match(/Login/)
+      expect(response.body).not_to include('Login')
     end
   end
 
@@ -632,7 +632,7 @@ RSpec.describe CatalogController, :api do
       end
     end
 
-    context 'for a facet field with a key different from the underlying field name' do
+    context 'with a facet field with a key different from the underlying field name' do
       before do
         controller.blacklight_config.add_facet_field 'params_key', field: 'format'
       end

@@ -6,6 +6,9 @@ on:
         type: string
         default: ""
         description: The branch or reference to run the workflow against
+permissions:
+  contents: read
+
 jobs:
   set_matrix:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
       - name: Echo ./.github/matrix.json
@@ -43,7 +46,7 @@ jobs:
       ENGINE_CART_RAILS_OPTIONS: "--skip-git --skip-listen --skip-spring --skip-keeps --skip-kamal --skip-thruster --skip-solid --skip-coffee --skip-test ${{ matrix.additional_engine_cart_rails_options }}"
       BUNDLER_VERSION: ${{ matrix.bundler_version || '2.7.2' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
       - name: Set up Ruby
