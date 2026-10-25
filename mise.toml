@@ -1,0 +1,6 @@
+[tools]
+node = "latest"
+ruby = "latest"
+
+[env]
+_.file = ".env"
