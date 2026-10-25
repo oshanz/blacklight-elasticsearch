@@ -69,3 +69,7 @@ end
 
 
 gem "blacklight", path: "../origin"
+gem "json", "< 3.0"
+gem "blacklight-marc", "~> 9.0"
+
+gem "elasticsearch", "~> 9.5"
