@@ -100,16 +100,15 @@ RSpec.describe Blacklight::ElasticSearch::Repository, :api do
 
   describe '#commit' do
     it 'refreshes the index' do
-      indices = double('indices')
+      indices = double(refresh: nil)
       allow(connection).to receive(:indices).and_return(indices)
-      allow(indices).to receive(:refresh)
       repository.commit
       expect(indices).to have_received(:refresh).with(index: 'blacklight-test')
     end
   end
 
   describe '#create_index!' do
-    let(:indices) { double('indices') }
+    let(:indices) { double(create: nil) }
 
     before { allow(connection).to receive(:indices).and_return(indices) }
 

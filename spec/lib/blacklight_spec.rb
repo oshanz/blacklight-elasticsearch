@@ -53,7 +53,7 @@ RSpec.describe Blacklight do
       end
     end
 
-    context 'for an elasticsearch index' do
+    context 'with an elasticsearch index' do
       before do
         allow(described_class).to receive(:connection_config).and_return(adapter: 'elasticsearch')
       end
@@ -63,7 +63,7 @@ RSpec.describe Blacklight do
       end
     end
 
-    context 'for an opensearch index' do
+    context 'with an opensearch index' do
       before do
         allow(described_class).to receive(:connection_config).and_return(adapter: 'opensearch')
       end
@@ -86,7 +86,7 @@ RSpec.describe Blacklight do
   end
 
   describe 'adapter-aware defaults' do
-    context 'for a solr index' do
+    context 'with a solr index' do
       before { allow(described_class).to receive(:connection_config).and_return(adapter: 'solr') }
 
       it 'returns the Solr companion classes' do
@@ -97,7 +97,7 @@ RSpec.describe Blacklight do
       end
     end
 
-    context 'for an elasticsearch index' do
+    context 'with an elasticsearch index' do
       before { allow(described_class).to receive(:connection_config).and_return(adapter: 'elasticsearch') }
 
       it 'returns the Elasticsearch companion classes' do
