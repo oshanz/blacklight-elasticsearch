@@ -2,3 +2,6 @@
 node = "latest"
 ruby = "latest"
 yarn = "latest"
+
+[env]
+_.file = ".env"
